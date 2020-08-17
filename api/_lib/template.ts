@@ -7,9 +7,8 @@ const twemoji = require('twemoji');
 const twOptions = { folder: 'svg', ext: '.svg' };
 const emojify = (text: string) => twemoji.parse(text, twOptions);
 
-const rglr = readFileSync(`${__dirname}/../_fonts/Inter-Regular.woff2`).toString('base64');
-const bold = readFileSync(`${__dirname}/../_fonts/Inter-Bold.woff2`).toString('base64');
-const mono = readFileSync(`${__dirname}/../_fonts/Vera-Mono.woff2`).toString('base64');
+const blacker = readFileSync(`${__dirname}/../_fonts/Blacker.woff2`).toString('base64');
+const santral = readFileSync(`${__dirname}/../_fonts/Santral.woff2`).toString('base64');
 
 function getCss(theme: string, fontSize: string) {
     let background = 'white';
@@ -23,25 +22,18 @@ function getCss(theme: string, fontSize: string) {
     }
     return `
     @font-face {
-        font-family: 'Inter';
+        font-family: 'Blacker';
         font-style:  normal;
         font-weight: normal;
-        src: url(data:font/woff2;charset=utf-8;base64,${rglr}) format('woff2');
+        src: url(data:font/woff2;charset=utf-8;base64,${blacker}) format('woff2');
     }
 
     @font-face {
-        font-family: 'Inter';
-        font-style:  normal;
-        font-weight: bold;
-        src: url(data:font/woff2;charset=utf-8;base64,${bold}) format('woff2');
+      font-family: 'Santral';
+      font-style:  normal;
+      font-weight: normal;
+      src: url(data:font/woff2;charset=utf-8;base64,${santral}) format('woff2');
     }
-
-    @font-face {
-        font-family: 'Vera';
-        font-style: normal;
-        font-weight: normal;
-        src: url(data:font/woff2;charset=utf-8;base64,${mono})  format("woff2");
-      }
 
     body {
         background: ${background};
@@ -52,6 +44,7 @@ function getCss(theme: string, fontSize: string) {
         text-align: center;
         align-items: center;
         justify-content: center;
+        font-variant-ligatures: discretionary-ligatures;
     }
 
     code {
@@ -95,12 +88,26 @@ function getCss(theme: string, fontSize: string) {
     }
     
     .heading {
-        font-family: 'Inter', sans-serif;
+        font-family: 'Blacker', sans-serif;
         font-size: ${sanitizeHtml(fontSize)};
         font-style: normal;
         color: ${foreground};
         line-height: 1.8;
-    }`;
+    }
+    
+    .small {
+        position: absolute;
+        bottom: 100px;
+        margin-left: auto;
+        left: 0;
+        right: 0;
+        font-family: 'Santral', sans-serif;
+        font-size: 36px;
+        font-style: normal;
+        color: ${foreground};
+        margin: 0;
+        line-height: 1;
+      }`;
 }
 
 export function getHtml(parsedReq: ParsedRequest) {
@@ -125,6 +132,9 @@ export function getHtml(parsedReq: ParsedRequest) {
             <div class="heading">${emojify(
                 md ? marked(text) : sanitizeHtml(text)
             )}
+            </div>
+            <div class="small">
+                Ben Spinks
             </div>
         </div>
     </body>
