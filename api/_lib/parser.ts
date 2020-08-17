@@ -5,8 +5,18 @@ import { ParsedRequest, Theme } from './types';
 export function parseRequest(req: IncomingMessage) {
     console.log('HTTP ' + req.url);
     const { pathname, query } = parse(req.url || '/', true);
-    const { fontSize, images, widths, heights, theme, md } = (query || {});
-
+    const { fontSize, images, widths, heights, imageObj, theme, md } =
+        query || {};
+    if (Array.isArray(imageObj)) {
+        throw new Error('Expected a single images Object');
+    }
+    let parsedImages = JSON.parse(imageObj || '{}');
+    if (Object.keys(parsedImages).length === 0) {
+        console.log('Legacy image format');
+        parsedImages.images = getArray(images);
+        parsedImages.widths = getArray(widths);
+        parsedImages.heights = getArray(heights);
+    }
     if (Array.isArray(fontSize)) {
         throw new Error('Expected a single fontSize');
     }
@@ -32,9 +42,9 @@ export function parseRequest(req: IncomingMessage) {
         theme: theme === 'dark' ? 'dark' : 'light',
         md: md === '1' || md === 'true',
         fontSize: fontSize || '96px',
-        images: getArray(images),
-        widths: getArray(widths),
-        heights: getArray(heights),
+        images: parsedImages.images,
+        widths: parsedImages.widths,
+        heights: parsedImages.heights,
     };
     parsedRequest.images = getDefaultImages(parsedRequest.images, parsedRequest.theme);
     return parsedRequest;
